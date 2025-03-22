@@ -10,17 +10,20 @@ datasource db {
 model User {
   id            String    @id @default(cuid())
   name          String?
-  email         String    @unique
+  email         String?   @unique
   emailVerified DateTime?
   image         String?
   password      String?
-  stripeCustomerId String?
+  stripeCustomerId String? @unique
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  projects      Project[]
-  tasks         Task[]
   subscription  Subscription?
   clients       Client[]
+  projects      Project[]
+  tasks         Task[]
+  assistantResponses AssistantResponse[]
+
+  @@index([email])
 }
 
 model Project {
@@ -89,4 +92,18 @@ model Subscription {
   trialEndsAt   DateTime
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+model AssistantResponse {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  message       String   @db.Text
+  role          String   // 'user' or 'assistant'
+  analysis      String?  @db.Text
+  recommendations String? @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
 } 

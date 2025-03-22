@@ -28,14 +28,36 @@ export async function GET(request: Request) {
       )
     }
 
-    // Check if subscription is active or if trial hasn't ended
-    const now = new Date()
+    const now = new Date();
+    console.log(user.subscription.trialEndsAt);
+
+    const trialEnd = new Date(user.subscription.trialEndsAt); // Convert to Date object
+    const timeLeft: number = trialEnd.getTime() - now.getTime(); // Difference in milliseconds
+
+    if (timeLeft <= 0) {
+        console.log("Trial expired.");
+    } else {
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        console.log(`Trial ends in: ${days}d ${hours}h ${minutes}m ${seconds}s`);
+    }
+
     const isTrialActive = user.subscription.trialEndsAt && user.subscription.trialEndsAt > now
+    console.log(isTrialActive)
     const isSubscriptionActive = user.subscription.status === 'active'
 
     if (!isSubscriptionActive && !isTrialActive) {
       return NextResponse.json(
         { error: 'No active subscription' },
+        { status: 403 }
+      )
+    }
+    if (!isTrialActive && isSubscriptionActive){
+      return NextResponse.json(
+        { error: 'Trial has ended' },
         { status: 403 }
       )
     }

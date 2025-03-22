@@ -47,7 +47,7 @@ export async function POST(request: Request) {
 
       // Create a trial subscription in the database
       const trialEndDate = new Date()
-      trialEndDate.setDate(trialEndDate.getDate() + 30)
+      trialEndDate.setDate(trialEndDate.getDate() + 7)
 
       const subscription = await prisma.subscription.create({
         data: {

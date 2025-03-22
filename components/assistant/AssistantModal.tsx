@@ -58,10 +58,21 @@ export function AssistantModal({
     setIsTyping(true)
 
     try {
+      // Save user message
+      await fetch('/api/assistant/responses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userMessage.content,
+          role: 'user'
+        })
+      })
+
+      // Get AI response
       const response = await fetch('/api/assistant/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input.trim() }),
+        body: JSON.stringify({ message: userMessage.content }),
       })
 
       if (!response.ok) throw new Error('Failed to get response')
@@ -76,6 +87,18 @@ export function AssistantModal({
       }
 
       setMessages(prev => [...prev, assistantMessage])
+
+      // Save assistant response
+      await fetch('/api/assistant/responses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: data.response,
+          role: 'assistant',
+          analysis: data.analysis,
+          recommendations: data.recommendations
+        })
+      })
     } catch (error) {
       console.error('Error:', error)
     } finally {

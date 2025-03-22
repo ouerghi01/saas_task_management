@@ -4,9 +4,16 @@ import { NextResponse } from 'next/server'
 export default withAuth(
   async function middleware(req) {
     const token = req.nextauth.token
-
+    const publicPaths = ['/login', '/signup','/']
+    if (!token && publicPaths.includes(req.nextUrl.pathname)) {
+      return NextResponse.next()
+    }
+    // Prevent infinite redirect by allowing access to the signin page
     if (!token) {
-      return NextResponse.redirect(new URL('/auth/signin', req.url))
+      if (req.nextUrl.pathname !== '/login') {
+        return NextResponse.redirect(new URL('/login', req.url))
+      }
+      return NextResponse.next()
     }
 
     // Only check subscription for dashboard routes
@@ -16,6 +23,8 @@ export default withAuth(
           Cookie: req.headers.get('cookie') || '',
         },
       })
+      const data = await response.json()
+      console.log(data)
 
       if (!response.ok) {
         return NextResponse.redirect(new URL('/pricing', req.url))
@@ -26,7 +35,7 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token }) => !!token,
+      authorized: ({ token }) => true, // Allow middleware to handle redirections
     },
   }
 )
@@ -35,7 +44,6 @@ export const config = {
   matcher: [
     '/dashboard/:path*',
     '/pricing',
-    '/api/:path*',
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|auth/signin).*)', // Prevent redirect loops
   ],
-} 
+}

@@ -24,6 +24,7 @@ export function SignUpForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, name }),
       })
+      const result = await response.json()
 
       if (!response.ok) {
         const data = await response.json()
@@ -31,19 +32,20 @@ export function SignUpForm() {
       }
 
       // Sign in the user after successful signup
-      const result = await signIn('credentials', {
+      const result2 = await signIn('credentials', {
         email,
         password,
         redirect: false,
       })
-
+      console.log( result2)
       if (result?.error) {
         throw new Error(result.error)
       }
-
+      router.push(result.redirectUrl)
       // Redirect to the selected plan or dashboard
       const plan = searchParams.get('plan')
-      router.push(plan ? `/dashboard?plan=${plan}` : '/dashboard')
+      console.log(plan)
+      //router.push(plan ? `/dashboard?plan=${plan}` : '/dashboard')
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Something went wrong')
     } finally {

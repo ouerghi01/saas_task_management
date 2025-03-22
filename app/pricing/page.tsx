@@ -69,16 +69,13 @@ const tiers = [
 
 export default function PricingPage() {
   const { data: session } = useSession()
+  console.log(session)
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const handleSubscribe = async (priceId: string | undefined, plan: string, isTrial: boolean = false) => {
-    if (!session) {
-      router.push('/auth/signin')
-      return
-    }
-
+    
     if (isTrial) {
       try {
         setLoading(plan)

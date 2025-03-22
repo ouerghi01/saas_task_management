@@ -24,6 +24,7 @@ export async function POST(request: Request) {
         email:email
       }
     })
+    console.log({existingUser})
 
     if (existingUser) {
       return NextResponse.json(

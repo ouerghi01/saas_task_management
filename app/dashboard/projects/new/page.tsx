@@ -1,7 +1,7 @@
 import React from 'react'
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { authOptions } from '@/app/api/auth/[...nextauth]/config'
 import { ProjectForm } from '@/components/projects/ProjectForm'
 
 export default async function NewProjectPage() {

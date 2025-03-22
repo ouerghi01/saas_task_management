@@ -1,14 +1,24 @@
-import React from 'react'
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '@/app/api/auth/[...nextauth]/config'
-import { ClientForm } from '@/components/clients/ClientForm'
+import { PrismaClient } from '@prisma/client'
+import { ProfileForm } from '@/components/profile/ProfileForm'
 
-export default async function NewClientPage() {
+const prisma = new PrismaClient()
+
+export default async function ProfilePage() {
   const session = await getServerSession(authOptions)
 
-  if (!session) {
-    redirect('/login')
+  if (!session?.user?.email) {
+    redirect('/auth/signin')
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email }
+  })
+
+  if (!user) {
+    redirect('/auth/signin')
   }
 
   return (
@@ -17,12 +27,15 @@ export default async function NewClientPage() {
         <div className="md:flex md:items-center md:justify-between">
           <div className="min-w-0 flex-1">
             <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-              New Client
+              Profile Settings
             </h2>
+            <p className="mt-1 text-sm text-gray-500">
+              Manage your personal information and preferences
+            </p>
           </div>
         </div>
         <div className="mt-8">
-          <ClientForm />
+          <ProfileForm user={user} />
         </div>
       </div>
     </div>

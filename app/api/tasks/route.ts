@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { PrismaClient } from '@prisma/client'
-import { authOptions } from '../auth/[...nextauth]/route'
+import { authOptions } from '../auth/[...nextauth]/config'
 
 const prisma = new PrismaClient()
 
@@ -42,6 +42,17 @@ export async function POST(request: Request) {
     }
 
     // Create task
+    const user = await prisma.user.findUnique({
+      where: {
+        id: session.user.id,
+      },
+    })
+    if (!user) {
+      return NextResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
     const task = await prisma.task.create({
       data: {
         title,
@@ -49,7 +60,7 @@ export async function POST(request: Request) {
         status,
         dueDate: dueDate ? new Date(dueDate) : null,
         projectId,
-        userId: session.user.id,
+        userId: user.id,
       },
       include: {
         project: true,

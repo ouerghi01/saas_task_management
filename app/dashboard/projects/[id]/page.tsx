@@ -1,7 +1,7 @@
 import React from 'react'
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { authOptions } from '@/app/api/auth/[...nextauth]/config'
 import { PrismaClient } from '@prisma/client'
 import { ProjectForm } from '@/components/projects/ProjectForm'
 
@@ -61,7 +61,7 @@ export default async function EditProjectPage({
           </div>
         </div>
         <div className="mt-8">
-          <ProjectForm project={project} />
+          <ProjectForm  />
         </div>
       </div>
     </div>

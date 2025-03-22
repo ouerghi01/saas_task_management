@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { Suspense } from 'react'
 import Link from 'next/link'
 import { SignUpForm } from '@/components/auth/SignUpForm'
 
@@ -18,7 +18,10 @@ export default function SignUpPage() {
             </Link>
           </p>
         </div>
+        <Suspense fallback={<div>Loading...</div>}>
         <SignUpForm />
+
+        </Suspense>
       </div>
     </div>
   )
